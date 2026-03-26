@@ -110,7 +110,7 @@ function Header({ onExit }: { onExit: () => void }) {
     <header className="bg-surface-container-low text-primary shadow-[0_32px_32px_rgba(186,246,245,0.08)] flex justify-between items-center px-6 py-4 w-full sticky top-0 z-50">
       <div className="flex items-center gap-3">
         <Bolt className="w-6 h-6" />
-        <h1 className="font-manrope font-black uppercase tracking-tight text-xl">Performance Pulse</h1>
+        <h1 className="font-manrope font-black uppercase tracking-tight text-xl">ZIVA CLUB</h1>
       </div>
       <button 
         onClick={onExit}
@@ -152,10 +152,10 @@ function LandingPage({
         <div className="relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/20 mb-4">
             <span className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#2efd7c]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">Live Pulse Research</span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">DMSIE CUP 2</span>
           </div>
           <h1 className="text-[3.5rem] font-black leading-[0.9] tracking-tighter mb-4 italic">
-            FUEL THE <span className="text-primary">DATA</span><br />BEHIND THE <span className="text-secondary">PROS.</span>
+            LET THE <span className="text-primary">GAME</span><br />COME TO <span className="text-secondary">YOU.</span>
           </h1>
           <p className="text-on-surface-variant max-w-[85%] leading-relaxed">
             Contribute your vitals to our elite sports analytics engine and unlock precision insights tailored for your physiology.

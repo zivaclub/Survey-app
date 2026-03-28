@@ -47,9 +47,16 @@ app.post("/api/submit", async (req, res) => {
 
     console.log(`Successfully submitted survey for user: ${username}`);
     res.json({ success: true });
-  } catch (error) {
-    console.error("Google Sheets error:", error);
-    res.status(500).json({ error: "Failed to submit to Google Sheets" });
+  } catch (error: any) {
+    console.error("Google Sheets error details:", {
+      message: error.message,
+      code: error.code,
+      errors: error.errors,
+    });
+    res.status(500).json({ 
+      error: "Failed to submit to Google Sheets", 
+      details: error.message 
+    });
   }
 });
 

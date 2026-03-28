@@ -11,6 +11,10 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [appState, currentStep]);
+
   const handleStart = () => {
     if (username.trim()) {
       setAppState('survey');
@@ -58,9 +62,17 @@ export default function App() {
     setAnswers(prev => ({ ...prev, [QUESTIONS[currentStep].id]: value }));
   };
 
+  const handleExit = () => {
+    if (appState === 'survey' && Object.keys(answers).length > 0) {
+      submitToGoogleSheets(answers);
+    } else {
+      setAppState('landing');
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col max-w-md mx-auto relative overflow-hidden bg-background selection:bg-primary selection:text-on-primary">
-      <Header onExit={() => setAppState('landing')} />
+      <Header onExit={handleExit} />
       
       <main className="flex-1 flex flex-col relative z-10">
         <AnimatePresence mode="wait">
@@ -96,8 +108,6 @@ export default function App() {
         </AnimatePresence>
       </main>
 
-      {appState !== 'survey' && <BottomNav activeTab={appState === 'landing' ? 'today' : 'insights'} />}
-      
       {/* Decorative Background Elements */}
       <div className="fixed -bottom-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none -z-10" />
       <div className="fixed top-1/2 -left-24 w-48 h-48 bg-secondary/5 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -114,7 +124,7 @@ function Header({ onExit }: { onExit: () => void }) {
       </div>
       <button 
         onClick={onExit}
-        className="font-manrope font-extrabold uppercase tracking-tight hover:text-secondary transition-colors duration-200 active:scale-95 text-sm"
+        className="font-manrope font-extrabold uppercase tracking-tight text-white hover:text-secondary transition-colors duration-200 active:scale-95 text-sm"
       >
         Save & Exit
       </button>
@@ -139,33 +149,33 @@ function LandingPage({
       exit={{ opacity: 0 }}
       className="flex flex-col pb-32"
     >
-      <section className="relative w-full h-[530px] flex flex-col justify-end px-6 pb-12 overflow-hidden">
+      <section className="relative w-full h-[480px] flex flex-col justify-end px-6 pb-8 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcYCIh5ktFpcmwor1i27j3-52gFf5G468ZGL3GVrzWoJWkoe9g0xB-73jPZ8FMBGgy9z7F7a7FMpaRKwMCREH1vr9qpLWzC3CeLS2oHqrDD1VuRc1kfXsPK7LK7cMn2pJ1UferlqUVLVO8vJWsAybbt8prPrIZ-0BOjQ3hjBGhksbKVaA_-HnWnREdCH47xEMp77QfhHCkZoE0Eu9wLrHGB9kp6mPkofB-SK_yUvNRzPJHNtbsxhfuXegR9iTl0pkUyRprPc8e9aE" 
-            alt="Athletic performance" 
-            className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
+            src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2070&auto=format&fit=crop" 
+            alt="Athlete" 
+            className="w-full h-full object-cover opacity-20 mix-blend-luminosity"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
         </div>
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest border border-outline-variant/20 mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-highest border border-outline-variant/20 mb-4">
             <span className="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#2efd7c]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-secondary">DMSIE CUP 2</span>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">DMSIE CUP 2</span>
           </div>
-          <h1 className="text-[3.5rem] font-black leading-[0.9] tracking-tighter mb-4 italic">
+          <h1 className="text-[3rem] font-black leading-[0.9] tracking-tighter mb-4 italic">
             LET THE <span className="text-primary">GAME</span><br />COME TO <span className="text-secondary">YOU.</span>
           </h1>
-          <p className="text-on-surface-variant max-w-[85%] leading-relaxed">
-            Contribute your vitals to our elite sports analytics engine and unlock precision insights tailored for your physiology.
+          <p className="text-on-surface-variant max-w-[90%] leading-relaxed text-sm">
+            Welcome to the official ZIVA CLUB pre-tournament survey. Your vitals help us optimize the elite sports analytics engine for the upcoming competition.
           </p>
         </div>
       </section>
 
-      <section className="px-6 -mt-8 relative z-20 space-y-4">
-        <div className="glass-card p-6 rounded-lg border-l-2 border-primary">
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-2">
+      <section className="px-6 -mt-6 relative z-20 space-y-3">
+        <div className="glass-card p-5 rounded-lg border-l-2 border-primary">
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-1.5">
             Athlete Username
           </label>
           <input 
@@ -173,38 +183,38 @@ function LandingPage({
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Enter your name..."
-            className="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-3 text-on-surface focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-surface-container-highest border border-outline-variant/20 rounded-lg px-4 py-2.5 text-on-surface focus:outline-none focus:border-primary transition-colors text-sm"
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="glass-card p-6 rounded-lg border-l-2 border-secondary flex flex-col justify-between h-40">
-            <Timer className="text-secondary w-6 h-6" />
+        <div className="grid grid-cols-2 gap-3">
+          <div className="glass-card p-5 rounded-lg border-l-2 border-secondary flex flex-col justify-between h-32">
+            <Timer className="text-secondary w-5 h-5" />
             <div>
-              <div className="text-3xl font-black text-on-surface">7:00</div>
-              <div className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Estimated Time</div>
+              <div className="text-2xl font-black text-on-surface">5:00</div>
+              <div className="text-[9px] uppercase tracking-widest text-on-surface-variant font-bold">Est. Time</div>
             </div>
           </div>
-          <div className="glass-card p-6 rounded-lg flex flex-col justify-between h-40">
-            <Award className="text-primary w-6 h-6" />
+          <div className="glass-card p-5 rounded-lg flex flex-col justify-between h-32">
+            <Award className="text-primary w-5 h-5" />
             <div>
-              <div className="text-3xl font-black text-on-surface">FREE</div>
-              <div className="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Custom Report</div>
+              <div className="text-2xl font-black text-on-surface">PRO</div>
+              <div className="text-[9px] uppercase tracking-widest text-on-surface-variant font-bold">Report</div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mt-12 px-6 flex flex-col items-center">
+      <section className="mt-8 px-6 flex flex-col items-center">
         <button 
           onClick={onStart}
           disabled={!username.trim()}
-          className="w-full bg-gradient-to-r from-primary to-primary-container py-6 rounded-full text-on-primary font-black uppercase tracking-[0.15em] text-lg shadow-[0_20px_40px_rgba(80,244,227,0.2)] active:scale-95 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-primary to-primary-container py-4 rounded-full text-on-primary font-black uppercase tracking-[0.15em] text-base shadow-[0_15px_30px_rgba(80,244,227,0.2)] active:scale-95 transition-all mb-3 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Start Survey
         </button>
-        <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold opacity-60">
-          Secure & Anonymous Data Collection
+        <p className="text-[9px] text-on-surface-variant uppercase tracking-widest font-bold opacity-60">
+          Pre-Tournament Data Collection
         </p>
       </section>
     </motion.div>
@@ -238,42 +248,42 @@ function SurveyPage({
       initial={{ x: 20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: -20, opacity: 0 }}
-      className="flex-1 flex flex-col px-6 pt-12 pb-32 mesh-gradient"
+      className="flex-1 flex flex-col px-6 pt-8 pb-12 mesh-gradient"
     >
-      <div className="mb-12">
-        <div className="flex justify-between items-end mb-4">
-          <span className="font-bold text-primary uppercase tracking-widest text-xs">Progress</span>
-          <span className="font-extrabold text-on-surface text-lg">
-            {currentStep + 1}<span className="text-on-surface-variant font-normal text-sm ml-1">/ {totalSteps}</span>
+      <div className="mb-8">
+        <div className="flex justify-between items-end mb-3">
+          <span className="font-bold text-primary uppercase tracking-widest text-[10px]">Progress</span>
+          <span className="font-extrabold text-on-surface text-base">
+            {currentStep + 1}<span className="text-on-surface-variant font-normal text-xs ml-1">/ {totalSteps}</span>
           </span>
         </div>
-        <div className="h-3 w-full bg-surface-variant rounded-full overflow-hidden">
+        <div className="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            className="h-full bg-gradient-to-r from-secondary to-primary shadow-[0_0_15px_rgba(80,244,227,0.4)]"
+            className="h-full bg-gradient-to-r from-secondary to-primary shadow-[0_0_10px_rgba(80,244,227,0.4)]"
           />
         </div>
       </div>
 
-      <section className="space-y-10">
-        <div className="space-y-4">
-          <h2 className="text-on-surface-variant text-sm font-bold uppercase tracking-[0.2em]">{question.category}</h2>
-          <p className="font-extrabold text-2xl leading-tight text-on-surface">
+      <section className="space-y-6">
+        <div className="space-y-3">
+          <h2 className="text-on-surface-variant text-[10px] font-bold uppercase tracking-[0.2em]">{question.category}</h2>
+          <p className="font-extrabold text-xl leading-tight text-on-surface">
             {question.text}
           </p>
         </div>
 
         {question.highlight && (
-          <div className="bg-surface-container-low rounded-lg p-8 border-l-4 border-secondary kinetic-glow">
-            <p className="text-xl font-bold italic text-tertiary">
+          <div className="bg-surface-container-low rounded-lg p-6 border-l-4 border-secondary kinetic-glow">
+            <p className="text-lg font-bold italic text-tertiary">
               "{question.highlight}"
             </p>
           </div>
         )}
 
         {question.image && (
-          <div className="rounded-lg overflow-hidden h-40 relative group">
+          <div className="rounded-lg overflow-hidden h-32 relative group">
             <img 
               src={question.image} 
               alt="Context" 
@@ -282,30 +292,30 @@ function SurveyPage({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
             {question.hint && (
-              <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                <Lightbulb className="text-secondary w-4 h-4" />
-                <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">{question.hint}</p>
+              <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                <Lightbulb className="text-secondary w-3 h-3" />
+                <p className="text-[9px] font-bold uppercase tracking-widest text-on-surface-variant">{question.hint}</p>
               </div>
             )}
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {question.options.map((opt) => (
             <button 
               key={opt.value}
               onClick={() => onSelect(opt.value)}
               disabled={isSubmitting}
-              className={`flex items-center justify-between p-5 rounded-lg transition-all active:scale-[0.98] group ${
+              className={`flex items-center justify-between p-4 rounded-lg transition-all active:scale-[0.98] group ${
                 selectedAnswer === opt.value 
-                  ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-[0_0_20px_rgba(80,244,227,0.3)] transform scale-[1.02]' 
+                  ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary shadow-[0_0_15px_rgba(80,244,227,0.3)] transform scale-[1.01]' 
                   : 'bg-surface-container-high border border-outline-variant/20 hover:border-primary/50'
               }`}
             >
-              <span className={`font-bold ${selectedAnswer === opt.value ? 'text-on-primary' : 'text-on-surface-variant group-hover:text-primary'}`}>
+              <span className={`font-bold text-sm ${selectedAnswer === opt.value ? 'text-on-primary' : 'text-on-surface-variant group-hover:text-primary'}`}>
                 {opt.label}
               </span>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-extrabold transition-colors ${
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-extrabold text-sm transition-colors ${
                 selectedAnswer === opt.value 
                   ? 'bg-on-primary/20 text-on-primary' 
                   : 'bg-surface-container-highest text-on-surface group-hover:bg-primary group-hover:text-on-primary'
@@ -316,18 +326,18 @@ function SurveyPage({
           ))}
         </div>
 
-        <div className="pt-8 flex gap-4">
+        <div className="pt-4 flex gap-3">
           <button 
             onClick={onBack}
             disabled={isSubmitting}
-            className="flex-1 py-4 px-6 rounded-full bg-surface-container-highest text-primary border border-outline-variant/30 font-bold uppercase tracking-widest text-xs transition-all hover:bg-surface-variant disabled:opacity-50"
+            className="flex-1 py-3 px-4 rounded-full bg-surface-container-highest text-primary border border-outline-variant/30 font-bold uppercase tracking-widest text-[10px] transition-all hover:bg-surface-variant disabled:opacity-50"
           >
             Back
           </button>
           <button 
             onClick={onNext}
             disabled={!selectedAnswer || isSubmitting}
-            className={`flex-[2] py-4 px-6 rounded-full font-black uppercase tracking-widest text-xs shadow-lg active:scale-95 transition-all ${
+            className={`flex-[2] py-3 px-4 rounded-full font-black uppercase tracking-widest text-[10px] shadow-lg active:scale-95 transition-all ${
               selectedAnswer && !isSubmitting
                 ? 'bg-gradient-to-r from-secondary to-primary-container text-on-primary' 
                 : 'bg-surface-variant text-on-surface-variant cursor-not-allowed'
@@ -403,29 +413,5 @@ function CompletionPage({ onReset }: { onReset: () => void; key?: string }) {
         </button>
       </div>
     </motion.div>
-  );
-}
-
-function BottomNav({ activeTab }: { activeTab: 'today' | 'insights' | 'training' | 'profile' }) {
-  return (
-    <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-background/80 backdrop-blur-xl bg-gradient-to-t from-surface-container-low to-transparent">
-      <NavItem icon={<Gauge className="w-6 h-6" />} label="Today" active={activeTab === 'today'} />
-      <NavItem icon={<BarChart3 className="w-6 h-6" />} label="Insights" active={activeTab === 'insights'} />
-      <NavItem icon={<Dumbbell className="w-6 h-6" />} label="Training" active={activeTab === 'training'} />
-      <NavItem icon={<User className="w-6 h-6" />} label="Profile" active={activeTab === 'profile'} />
-    </nav>
-  );
-}
-
-function NavItem({ icon, label, active }: { icon: ReactNode; label: string; active?: boolean }) {
-  return (
-    <button className={`flex flex-col items-center justify-center p-3 transition-all active:scale-90 ${
-      active 
-        ? 'bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full shadow-[0_0_15px_rgba(80,244,227,0.4)]' 
-        : 'text-on-surface-variant hover:text-primary'
-    }`}>
-      {icon}
-      <span className="text-[10px] font-bold uppercase tracking-widest mt-1">{label}</span>
-    </button>
   );
 }
